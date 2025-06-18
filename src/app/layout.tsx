@@ -13,6 +13,10 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en" suppressHydrationWarning>
+      <head>
+        <link rel="icon" href="/favicon.ico" />
+        <title>Mladen Raguž - Portfolio</title>
+      </head>
       <body className={`${font.className}`}>
         <ThemeProvider
           attribute="class"
