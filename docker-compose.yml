@@ -1,8 +1,7 @@
 services:
   strapi:
-    build:
-      context: ./backend
-      dockerfile: Dockerfile
+    image: ghcr.io/mladen2211/my-portfolio-strapi:latest
+    container_name: portfolio-strapi
     restart: unless-stopped
     env_file: .env
     environment:
@@ -13,31 +12,58 @@ services:
       - strapi-data:/data
       - strapi-uploads:/app/public/uploads
     ports:
-      - "1337:1337"
+      - "8082:1337"
+    networks:
+      - portfolio
     healthcheck:
       test: ["CMD", "wget", "--quiet", "--tries=1", "--spider", "http://localhost:1337/_health"]
       interval: 30s
       timeout: 10s
       retries: 3
-      start_period: 30s
+      start_period: 60s
+    labels:
+      - "com.centurylinklabs.watchtower.enable=true"
 
   frontend:
-    build:
-      context: ./frontend
-      dockerfile: Dockerfile
-      args:
-        NEXT_PUBLIC_STRAPI_URL: ${NEXT_PUBLIC_STRAPI_URL:-http://strapi:1337}
-        NEXT_PUBLIC_SITE_URL: ${NEXT_PUBLIC_SITE_URL:-https://mladenraguz.com}
+    image: ghcr.io/mladen2211/my-portfolio-frontend:latest
+    container_name: portfolio-frontend
     restart: unless-stopped
     ports:
-      - "3000:3000"
+      - "8080:3000"
     environment:
-      NEXT_PUBLIC_STRAPI_URL: ${NEXT_PUBLIC_STRAPI_URL:-http://strapi:1337}
-      NEXT_PUBLIC_SITE_URL: ${NEXT_PUBLIC_SITE_URL:-https://mladenraguz.com}
+      NEXT_PUBLIC_STRAPI_URL: http://strapi:1337
+      NEXT_PUBLIC_SITE_URL: https://mraguz.me
     depends_on:
       strapi:
         condition: service_healthy
+    networks:
+      - portfolio
+    labels:
+      - "com.centurylinklabs.watchtower.enable=true"
+
+  watchtower:
+    image: containrrr/watchtower:latest
+    container_name: portfolio-watchtower
+    restart: unless-stopped
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock
+      - ~/.docker/config.json:/config.json:ro
+    environment:
+      WATCHTOWER_POLL_INTERVAL: 300
+      WATCHTOWER_CLEANUP: "true"
+      WATCHTOWER_LABEL_ENABLE: "true"
+      WATCHTOWER_INCLUDE_RESTARTING: "true"
+      WATCHTOWER_ROLLING_RESTART: "true"
+      WATCHTOWER_NOTIFICATIONS: ""
+    networks:
+      - portfolio
 
 volumes:
   strapi-data:
+    driver: local
   strapi-uploads:
+    driver: local
+
+networks:
+  portfolio:
+    driver: bridge

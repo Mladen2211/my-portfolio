@@ -14,7 +14,7 @@ const geistMono = Geist_Mono({
   display: "swap",
 });
 
-const SITE_URL = process.env.NEXT_PUBLIC_SITE_URL || "https://mladenraguz.com";
+const SITE_URL = process.env.NEXT_PUBLIC_SITE_URL || "https://mraguz.me";
 
 export const viewport: Viewport = {
   themeColor: "#0f172a",

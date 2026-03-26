@@ -5,7 +5,7 @@ import { JsonLd } from "@/components/JsonLd";
 
 export const revalidate = 60;
 
-const SITE_URL = process.env.NEXT_PUBLIC_SITE_URL || "https://mladenraguz.com";
+const SITE_URL = process.env.NEXT_PUBLIC_SITE_URL || "https://mraguz.me";
 
 export async function generateMetadata(): Promise<Metadata> {
   const { hero } = await fetchPortfolioData();
