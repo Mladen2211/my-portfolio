@@ -3,36 +3,43 @@ import { fetchPortfolioData } from "@/lib/portfolio-api";
 import { PortfolioShell } from "@/components/PortfolioShell";
 import { JsonLd } from "@/components/JsonLd";
 
-export const revalidate = 60;
+export const dynamic = "force-dynamic";
 
 const SITE_URL = process.env.NEXT_PUBLIC_SITE_URL || "https://mraguz.me";
 
 export async function generateMetadata(): Promise<Metadata> {
-  const { hero } = await fetchPortfolioData();
+  try {
+    const { hero } = await fetchPortfolioData();
 
-  const title = `${hero.name} | ${hero.role}`;
-  const description = `Portfolio of ${hero.name} — ${hero.role} in ${hero.location}. ${hero.tagline}`;
+    const title = `${hero.name} | ${hero.role}`;
+    const description = `Portfolio of ${hero.name} — ${hero.role} in ${hero.location}. ${hero.tagline}`;
 
-  return {
-    title,
-    description,
-    openGraph: {
+    return {
       title,
       description,
-      url: SITE_URL,
-      siteName: `${hero.name} — Portfolio`,
-      locale: "en_US",
-      type: "website",
-    },
-    twitter: {
-      card: "summary_large_image",
-      title,
-      description,
-    },
-    alternates: {
-      canonical: SITE_URL,
-    },
-  };
+      openGraph: {
+        title,
+        description,
+        url: SITE_URL,
+        siteName: `${hero.name} — Portfolio`,
+        locale: "en_US",
+        type: "website",
+      },
+      twitter: {
+        card: "summary_large_image",
+        title,
+        description,
+      },
+      alternates: {
+        canonical: SITE_URL,
+      },
+    };
+  } catch {
+    return {
+      title: "Portfolio",
+      description: "Software Engineer Portfolio",
+    };
+  }
 }
 
 export default async function PortfolioPage() {
