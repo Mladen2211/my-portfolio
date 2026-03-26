@@ -1,8 +1,8 @@
-FROM node:22-alpine AS build
+FROM node:20-alpine AS build
 WORKDIR /app
 
 COPY package.json package-lock.json ./
-RUN npm ci
+RUN npm install --frozen-lockfile || npm install
 
 COPY . .
 
@@ -13,7 +13,7 @@ ENV NEXT_PUBLIC_SITE_URL=${NEXT_PUBLIC_SITE_URL}
 
 RUN npm run build
 
-FROM node:22-alpine AS production
+FROM node:20-alpine AS production
 WORKDIR /app
 ENV NODE_ENV=production
 

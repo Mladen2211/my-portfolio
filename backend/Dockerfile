@@ -1,14 +1,14 @@
-FROM node:22-alpine AS build
+FROM node:20-alpine AS build
 RUN apk add --no-cache build-base python3 vips-dev
 
 WORKDIR /app
 COPY package.json package-lock.json ./
-RUN npm ci
+RUN npm install --frozen-lockfile || npm install
 
 COPY . .
 RUN npm run build
 
-FROM node:22-alpine AS production
+FROM node:20-alpine AS production
 RUN apk add --no-cache vips
 WORKDIR /app
 
