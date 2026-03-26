@@ -1,5 +1,8 @@
 services:
   strapi:
+    build:
+      context: ./backend
+      dockerfile: Dockerfile
     image: ghcr.io/mladen2211/my-portfolio-strapi:latest
     container_name: portfolio-strapi
     restart: unless-stopped
@@ -25,6 +28,12 @@ services:
       - "com.centurylinklabs.watchtower.enable=true"
 
   frontend:
+    build:
+      context: ./frontend
+      dockerfile: Dockerfile
+      args:
+        NEXT_PUBLIC_STRAPI_URL: http://strapi:1337
+        NEXT_PUBLIC_SITE_URL: https://mraguz.me
     image: ghcr.io/mladen2211/my-portfolio-frontend:latest
     container_name: portfolio-frontend
     restart: unless-stopped
@@ -47,7 +56,6 @@ services:
     restart: unless-stopped
     volumes:
       - /var/run/docker.sock:/var/run/docker.sock
-      - ~/.docker/config.json:/config.json:ro
     environment:
       WATCHTOWER_POLL_INTERVAL: 300
       WATCHTOWER_CLEANUP: "true"
