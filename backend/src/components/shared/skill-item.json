@@ -1,0 +1,15 @@
+{
+  "collectionName": "components_shared_skill_items",
+  "info": {
+    "displayName": "Skill Item",
+    "icon": "bulletList",
+    "description": "A single skill within a skill category"
+  },
+  "options": {},
+  "attributes": {
+    "name": {
+      "type": "string",
+      "required": true
+    }
+  }
+}

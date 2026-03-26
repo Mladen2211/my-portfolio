@@ -1,0 +1,15 @@
+{
+  "collectionName": "components_shared_technologies",
+  "info": {
+    "displayName": "Technology",
+    "icon": "code",
+    "description": "A technology tag"
+  },
+  "options": {},
+  "attributes": {
+    "name": {
+      "type": "string",
+      "required": true
+    }
+  }
+}

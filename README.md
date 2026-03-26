@@ -1,36 +1,114 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# My Portfolio
 
-## Getting Started
+Full-stack portfolio site built with **Next.js 16** (frontend) and **Strapi v5** (backend CMS).
 
-First, run the development server:
+## Architecture
 
-```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
+```
+frontend/   → Next.js 16, TypeScript, Tailwind CSS, App Router
+backend/    → Strapi v5, SQLite, auto-seeded content
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+## Local Development
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+### Prerequisites
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+- Node.js 20+
+- npm 9+
 
-## Learn More
+### Backend (Strapi)
 
-To learn more about Next.js, take a look at the following resources:
+```bash
+cd backend
+cp .env.example .env   # or use the existing .env
+npm install
+npm run develop
+```
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+Admin credentials (auto-seeded): `admin@portfolio.local` / `Admin1234!`
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+### Frontend (Next.js)
 
-## Deploy on Vercel
+```bash
+cd frontend
+npm install
+npm run dev
+```
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+Open [http://localhost:3000](http://localhost:3000).
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+## Production Deployment (Docker)
+
+### Prerequisites
+
+- Docker & Docker Compose
+- Git
+
+### Deploy to NUC / self-hosted server
+
+```bash
+# 1. Clone the repo
+git clone https://github.com/Mladen2211/my-portfolio.git
+cd my-portfolio
+
+# 2. Create your environment file
+cp .env.example .env
+# Edit .env — generate real secrets for APP_KEYS, JWT_SECRET, etc.
+
+# 3. Deploy
+chmod +x deploy.sh
+./deploy.sh
+```
+
+### Generating secrets
+
+```bash
+# Generate a random base64 secret
+openssl rand -base64 32
+```
+
+### Ports
+
+| Service  | Port |
+|----------|------|
+| Frontend | 3000 |
+| Strapi   | 1337 |
+
+### Reverse Proxy (Nginx / Caddy)
+
+Point your domain to port `3000`. Example Caddy config:
+
+```
+mladenraguz.com {
+    reverse_proxy localhost:3000
+}
+```
+
+If you need Strapi admin access externally, also proxy port `1337` on a subdomain:
+
+```
+cms.mladenraguz.com {
+    reverse_proxy localhost:1337
+}
+```
+
+### Useful commands
+
+```bash
+docker compose logs -f          # View logs
+docker compose down             # Stop
+docker compose up --build -d    # Rebuild & restart
+docker compose exec strapi sh   # Shell into Strapi container
+```
+
+### Data persistence
+
+- **SQLite database**: stored in Docker volume `strapi-data`
+- **Uploads**: stored in Docker volume `strapi-uploads`
+
+To backup:
+
+```bash
+docker compose exec strapi cp /data/data.db /data/backup.db
+docker cp $(docker compose ps -q strapi):/data/backup.db ./backup.db
+```
